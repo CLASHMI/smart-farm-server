@@ -9,10 +9,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   datasource:
-    driver-class-name: ${blog.datasource.driver-class-name}
-    url: jdbc:mysql://${blog.datasource.host}:${blog.datasource.port}/${blog.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-    username: ${blog.datasource.username}
-    password: ${blog.datasource.password}
+    driver-class-name: ${farm.datasource.driver-class-name}
+    url: jdbc:mysql://${farm.datasource.host}:${farm.datasource.port}/${farm.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${farm.datasource.username}
+    password: ${farm.datasource.password}
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
@@ -20,10 +20,10 @@ spring:
       fail-on-unknown-properties: false
   data:
     redis:
-      host: ${blog.redis.host}
-      port: ${blog.redis.port}
-      password: ${blog.redis.password}
-      database: ${blog.redis.database}
+      host: ${farm.redis.host}
+      port: ${farm.redis.port}
+      password: ${farm.redis.password}
+      database: ${farm.redis.database}
       timeout: 3000ms
       lettuce:
         pool:
@@ -42,5 +42,5 @@ mybatis-plus:
       id-type: auto # ????????
 
 jwt:
-  secret: ${blog.jwt.secret}
-  expiration: ${blog.jwt.expiration}
+  secret: ${farm.jwt.secret}
+  expiration: ${farm.jwt.expiration}
