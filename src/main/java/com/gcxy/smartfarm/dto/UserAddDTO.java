@@ -26,7 +26,7 @@ public class UserAddDTO implements Serializable {
      * 姓名
      * 必填，最长 10 字符
      */
-    @Schema(description = "姓名 (最长10字符)", example = "张三", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "姓名 (最长10字符)", example = "李四", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = MessageConstant.REALNAME_NOT_EMPTY)
     @Length(max = 10, message = MessageConstant.REALNAME_LENGTH_ERROR)
     private String realName;

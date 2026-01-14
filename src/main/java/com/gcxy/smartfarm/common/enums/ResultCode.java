@@ -37,7 +37,7 @@ public enum ResultCode {
     DICT_IN_USE(100601, "该字典已被使用，无法停用"),
     USER_LOGIN_ERROR(100601, "用户名或密码错误"),
     ACCOUNT_DISABLED(100601, "账号已禁用，无法登录"),
-    USER_NOT_EXIST(100601, "用户不存在"),
+    USER_NOT_EXIST(100601, "员工不存在"),
     DICT_NOT_EXIST(100601, "字典不存在");
     private final Integer code;
     private final String message;
