@@ -1,7 +1,7 @@
 package com.gcxy.smartfarm.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gcxy.smartfarm.common.constant.MessageConstant;
+import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.common.filter.JwtAuthenticationTokenFilter;
 import com.gcxy.smartfarm.common.result.Result;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -34,7 +34,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // Spring Security 6 推荐注解
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -53,63 +53,53 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. 禁用 CSRF 和 Logout (使用 Lambda 写法)
                 .csrf(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-
-                // 2. 允许跨域 (需配合 CorsConfig)
                 .cors(Customizer.withDefaults())
-
-                // 3. 禁用 Session (无状态模式)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // 4. 接口权限配置 (Spring Security 6 写法)
                 .authorizeHttpRequests(auth -> auth
-                        // 放行登录接口
                         .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
-                        // 放行静态资源和 Swagger 文档
                         .requestMatchers(
                                 "/doc.html",
                                 "/webjars/**",
                                 "/swagger-resources/**",
-                                "/v3/api-docs/**" // Boot 3 通常用 v3
+                                "/v3/api-docs/**"
                         ).permitAll()
-                        // 其他所有请求都需要认证
                         .anyRequest().authenticated()
                 )
-
-                // 5. 异常处理
                 .exceptionHandling(exceptions -> exceptions
-                        // (1) 未登录或 Token 无效的处理
+                        // (1) 未授权 / Token 问题 (100401)
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setContentType("application/json;charset=UTF-8");
-                            response.setStatus(HttpServletResponse.SC_OK); // 保持200状态码，由前端判断 code
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-                            // 获取 Filter 中设置的异常信息
+                            // 获取 Filter 中捕获的具体 JWT 异常
                             Object jwtError = request.getAttribute("JWT_ERROR");
-                            // 修正：引用字符串常量或直接写死提示，防止 MessageConstant 未定义错误
-                            Result<?> result = Result.error(MessageConstant.NOT_LOGIN);
+                            Result<?> result;
 
                             if (jwtError instanceof ExpiredJwtException) {
-                                result = Result.error("登录凭证已过期，请重新登录");
+                                // 场景：Token 过期 -> 返回 TOKEN_EXPIRED
+                                result = Result.error(ResultCode.TOKEN_EXPIRED);
                             } else if (jwtError instanceof JwtException) {
-                                result = Result.error("登录凭证无效");
+                                // 场景：Token 伪造/格式错 -> 返回 TOKEN_INVALID
+                                result = Result.error(ResultCode.TOKEN_INVALID);
+                            } else {
+                                // 场景：没带 Token -> 返回 UNAUTHORIZED
+                                result = Result.error(ResultCode.NOT_LOGIN);
                             }
 
                             response.getWriter().write(new ObjectMapper().writeValueAsString(result));
                         })
-                        // (2) 权限不足的处理
+                        // (2) 权限不足 (100403)
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setContentType("application/json;charset=UTF-8");
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            Result<?> result = Result.error(MessageConstant.PERMISSION_DENIED);
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+                            Result<?> result = Result.error(ResultCode.FORBIDDEN);
                             response.getWriter().write(new ObjectMapper().writeValueAsString(result));
                         })
                 )
-
-                // 6. 添加 JWT 过滤器
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 }

@@ -32,6 +32,7 @@ public class DictData implements Serializable {
     private String dictName;
     private String dictSort;
     private Integer status;
+    private Integer isReferenced;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

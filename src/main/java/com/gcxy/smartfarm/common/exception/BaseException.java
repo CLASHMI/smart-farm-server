@@ -1,5 +1,8 @@
 package com.gcxy.smartfarm.common.exception;
 
+import com.gcxy.smartfarm.common.enums.ResultCode;
+import lombok.Getter;
+
 /**
  * BaseException 类
  *
@@ -8,10 +11,17 @@ package com.gcxy.smartfarm.common.exception;
  * @created 15:10
  * @since 2026/1/13
  */
-public class BaseException extends RuntimeException{
-    public BaseException(String msg) {
-        super(msg);
+@Getter
+public class BaseException extends RuntimeException {
+
+    private final Integer code;
+
+    public BaseException(ResultCode resultCode) {
+        super(resultCode.getMessage());
+        this.code = resultCode.getCode();
     }
-    public BaseException() {
+    public BaseException(String message) {
+        super(message);
+        this.code = ResultCode.BUSINESS_ERROR.getCode();
     }
 }

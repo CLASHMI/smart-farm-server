@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
+import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 
 /**
@@ -35,6 +36,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private JwtUtils jwtUtils;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -42,6 +45,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String token = getTokenFromRequest(request);
 
         if (StringUtils.hasText(token)) {
+            // Token黑名单检验
+            String blacklistKey = "sys:token:blacklist:" + token;
+            if (Boolean.TRUE.equals(redisTemplate.hasKey(blacklistKey))) {
+                log.warn("检测到黑名单 Token，拦截访问");
+                request.setAttribute("JWT_ERROR", new JwtException("Token in blacklist"));
+                chain.doFilter(request, response);
+                return;
+            }
             try {
                 // 1. 解析 Token
                 Claims claims = jwtUtils.parseToken(token);
@@ -53,7 +64,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
                     // 3. 构建认证Token
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
+                            userDetails, token, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     // 4. 放入上下文

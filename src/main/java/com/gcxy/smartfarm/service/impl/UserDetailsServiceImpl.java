@@ -1,7 +1,7 @@
 package com.gcxy.smartfarm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gcxy.smartfarm.common.constant.MessageConstant;
+import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.entity.Role;
 import com.gcxy.smartfarm.entity.User;
 import com.gcxy.smartfarm.mapper.RoleMapper;
@@ -43,15 +43,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // 2. 查无此人 -> 抛异常
         if (user == null) {
-            throw new InternalAuthenticationServiceException(MessageConstant.USERNAME_OR_PASSWORD_ERROR);
+            throw new InternalAuthenticationServiceException(ResultCode.USER_LOGIN_ERROR.getMessage());
         }
 
-        // 3. 【修改点】账号被禁用 -> 抛 DisabledException
+        // 3. 账号被禁用 -> 抛 DisabledException
         if (user.getStatus() != null && user.getStatus() == 1) {
-            throw new DisabledException(MessageConstant.ACCOUNT_DISABLED);
+            throw new DisabledException(ResultCode.ACCOUNT_DISABLED.getMessage());
         }
 
-        // 4. 【修改点】封装权限 (需要用 roleId 查 Role 表)
+        // 4. 封装权限 (需要用 roleId 查 Role 表)
         List<GrantedAuthority> authorities = new ArrayList<>();
         if (user.getRoleId() != null) {
             Role role = roleMapper.selectById(user.getRoleId());
