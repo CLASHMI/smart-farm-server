@@ -95,7 +95,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
             throw new BaseException(ResultCode.DICT_NAME_EXIST);
         }
         DictData data = new DictData();
-        data.setTypeId(dictDataAddDTO.getTypeId());
+        BeanUtils.copyProperties(dictDataAddDTO, data);
         this.save(data);
         redisTemplate.delete("sys:dict:data:" + dictDataAddDTO.getTypeId());
     }
@@ -127,12 +127,16 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
                 BeanUtils.copyProperties(data, vo);
                 return vo;
             }).toList();
-            if (!dataList.isEmpty()) {
-                try {
-                    redisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(dataList), 24, TimeUnit.HOURS);
-                } catch (Exception e) {
-                    log.error("字典数据缓存写入失败", e);
-                }
+            try {
+                long timeout = dataList.isEmpty() ? 5 : 24 * 60;
+                redisTemplate.opsForValue().set(
+                        cacheKey,
+                        objectMapper.writeValueAsString(dataList),
+                        timeout,
+                        TimeUnit.MINUTES
+                );
+            } catch (Exception e) {
+                log.error("字典数据缓存写入失败", e);
             }
         }
         return dataList.stream()

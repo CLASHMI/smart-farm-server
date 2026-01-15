@@ -57,16 +57,14 @@ public class DictTypeServiceImpl extends ServiceImpl<DictTypeMapper, DictType> i
                 BeanUtils.copyProperties(type, vo);
                 return vo;
             }).toList();
-            if (!typeList.isEmpty()) {
-                try {
-                    redisTemplate.opsForValue().set(DICT_TYPES_KEY, objectMapper.writeValueAsString(typeList), 7, TimeUnit.DAYS);
-                } catch (Exception e) {
-                    log.error("字典类型缓存写入失败", e);
-                }
+            try {
+                long timeout = typeList.isEmpty() ? 5 : 7 * 24 * 60;
+                redisTemplate.opsForValue().set(DICT_TYPES_KEY,
+                        objectMapper.writeValueAsString(typeList), timeout, TimeUnit.MINUTES);
+            } catch (Exception e) {
+                log.error("字典类型缓存写入失败", e);
             }
-            return typeList;
-        } else {
-            return typeList;
         }
+        return typeList;
     }
 }
