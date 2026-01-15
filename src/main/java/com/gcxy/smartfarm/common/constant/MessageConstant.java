@@ -21,5 +21,4 @@ public class MessageConstant {
     public static final String DICT_ID_NOT_NULL = "字典类型ID不能为空";
     public static final String DICT_NAME_NOT_NULL = "字典名称不能为空";
     public static final String DICT_NAME_LENGTH_ERROR = "字典名称过长";
-    public static final String STATUS_NOT_NULL = "状态不能为空";
 }

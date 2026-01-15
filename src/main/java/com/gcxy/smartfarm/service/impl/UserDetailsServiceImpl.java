@@ -43,7 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // 2. 查无此人 -> 抛异常
         if (user == null) {
-            throw new InternalAuthenticationServiceException(ResultCode.USER_LOGIN_ERROR.getMessage());
+            throw new UsernameNotFoundException(ResultCode.USER_LOGIN_ERROR.getMessage());
         }
 
         // 3. 账号被禁用 -> 抛 DisabledException

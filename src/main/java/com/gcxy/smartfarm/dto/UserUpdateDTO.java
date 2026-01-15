@@ -37,7 +37,6 @@ public class UserUpdateDTO implements Serializable {
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = MessageConstant.PHONE_FORMAT_ERROR)
     private String phone;
 
-    @Schema(description = "状态 (0:正常, 1:停用)", example = "0", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = MessageConstant.STATUS_NOT_NULL)
+    @Schema(description = "状态 (0:正常, 1:停用)", example = "0")
     private Integer status;
 }

@@ -149,9 +149,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BaseException(ResultCode.USER_NOT_EXIST);
         }
-        User exist = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getPhone, userUpdateDTO.getPhone()).ne(User::getId, userUpdateDTO.getId()));
-        if (exist != null) {
+        if (user.getRoleId() == 1){
+            throw new BaseException(ResultCode.ADMIN_NOT_UPDATE);
+        }
+        Long count = userMapper.selectCount(new LambdaQueryWrapper<User>()
+                .eq(User::getPhone, userUpdateDTO.getPhone())
+                .ne(User::getId, userUpdateDTO.getId()));
+        if (count > 0) {
             throw new BaseException(ResultCode.USER_PHONE_EXIST);
         }
         user = new User();
@@ -170,6 +174,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BaseException(ResultCode.USER_NOT_EXIST);
         }
+        if (user.getRoleId() == 1){
+            throw new BaseException(ResultCode.ADMIN_NOT_UPDATE);
+        }
         user.setStatus(status);
         this.updateById(user);
     }
@@ -180,9 +187,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public void deleteUser(Long id) {
-        boolean removed = removeById(id);
-        if (!removed) {
+        User user = getById(id);
+        if (user == null) {
             throw new BaseException(ResultCode.USER_NOT_EXIST);
         }
+        if (user.getRoleId() == 1){
+            throw new BaseException(ResultCode.ADMIN_NOT_DELETE);
+        }
+        this.removeById(id);
+
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -49,24 +50,21 @@ public class GlobalExceptionHandler {
      * 注意：这里不用 401，因为 401 是 Token 相关的
      */
     @ExceptionHandler({BadCredentialsException.class, InternalAuthenticationServiceException.class})
-    @ResponseStatus(HttpStatus.OK) // 登录接口通常返回 200
+    @ResponseStatus(HttpStatus.OK)
     public Result<?> handleBadCredentialsException(Exception ex) {
-        // 使用我们在 ResultCode 里定义的专用错误
+        if (ex instanceof InternalAuthenticationServiceException) {
+            if (ex.getCause() instanceof DisabledException) {
+                return Result.error(ResultCode.ACCOUNT_DISABLED);
+            } else if (ex.getCause() instanceof UsernameNotFoundException){
+                return Result.error(ResultCode.USER_LOGIN_ERROR);
+            }
+        }
+        log.warn("用户登录发生异常: {}", ex.getMessage());
         return Result.error(ResultCode.USER_LOGIN_ERROR);
     }
 
     /**
-     * 3. 账号被禁用
-     * 归类为：业务逻辑错误 (100601)
-     */
-    @ExceptionHandler(DisabledException.class)
-    @ResponseStatus(HttpStatus.OK)
-    public Result<?> handleDisabledException(DisabledException ex) {
-        return Result.error(ResultCode.ACCOUNT_DISABLED);
-    }
-
-    /**
-     * 4. 参数校验异常 (HTTP 400)
+     * 3. 参数校验异常 (HTTP 400)
      * 对应 ResultCode.PARAM_ERROR (100400)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -79,7 +77,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 5. 权限不足 (HTTP 403)
+     * 4. 权限不足 (HTTP 403)
      * 对应 ResultCode.FORBIDDEN (100403)
      */
     @ExceptionHandler(AccessDeniedException.class)
@@ -89,7 +87,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 6. 系统兜底异常 (HTTP 500)
+     * 5. 系统兜底异常 (HTTP 500)
      * 对应 ResultCode.SYSTEM_ERROR (100500)
      */
     @ExceptionHandler(Exception.class)
