@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.enums.ResultCode;
+import com.gcxy.smartfarm.common.enums.RoleEnum;
 import com.gcxy.smartfarm.common.exception.BaseException;
 import com.gcxy.smartfarm.common.result.PageResult;
 import com.gcxy.smartfarm.common.utils.JwtUtils;
@@ -150,7 +151,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BaseException(MessageConstant.User.NOT_EXIST);
         }
-        if (user.getRoleId() == 1){
+        if (RoleEnum.ADMIN.getId().equals(user.getRoleId())){
             throw new BaseException(MessageConstant.User.ADMIN_IMMUTABLE);
         }
         Long count = userMapper.selectCount(new LambdaQueryWrapper<User>()
@@ -175,7 +176,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BaseException(MessageConstant.User.NOT_EXIST);
         }
-        if (user.getRoleId() == 1){
+        if (RoleEnum.ADMIN.getId().equals(user.getRoleId())){
             throw new BaseException(MessageConstant.User.ADMIN_IMMUTABLE);
         }
         user.setStatus(status);
@@ -192,7 +193,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             throw new BaseException(MessageConstant.User.NOT_EXIST);
         }
-        if (user.getRoleId() == 1){
+        if (RoleEnum.ADMIN.getId().equals(user.getRoleId())){
             throw new BaseException(MessageConstant.User.ADMIN_IMMUTABLE);
         }
         this.removeById(id);

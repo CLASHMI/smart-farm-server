@@ -30,7 +30,7 @@ public class DictData implements Serializable {
     private Long id;
     private Long TypeId;
     private String dictName;
-    private String dictSort;
+    private Integer dictSort;
     private Integer status;
     private Integer isReferenced;
     private LocalDateTime createTime;
