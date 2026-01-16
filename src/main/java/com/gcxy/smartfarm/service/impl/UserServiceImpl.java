@@ -3,6 +3,7 @@ package com.gcxy.smartfarm.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.common.exception.BaseException;
 import com.gcxy.smartfarm.common.result.PageResult;
@@ -94,7 +95,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void addUser(UserAddDTO userAddDTO) {
         // 手机号唯一性检验
         if (userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getPhone, userAddDTO.getPhone())) > 0) {
-            throw new BaseException(ResultCode.USER_PHONE_EXIST);
+            throw new BaseException(MessageConstant.User.PHONE_EXIST);
         }
         // 创建员工对象
         User user = new User();
@@ -147,16 +148,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void updateUser(UserUpdateDTO userUpdateDTO) {
         User user = getById(userUpdateDTO.getId());
         if (user == null) {
-            throw new BaseException(ResultCode.USER_NOT_EXIST);
+            throw new BaseException(MessageConstant.User.NOT_EXIST);
         }
         if (user.getRoleId() == 1){
-            throw new BaseException(ResultCode.ADMIN_NOT_UPDATE);
+            throw new BaseException(MessageConstant.User.ADMIN_IMMUTABLE);
         }
         Long count = userMapper.selectCount(new LambdaQueryWrapper<User>()
                 .eq(User::getPhone, userUpdateDTO.getPhone())
                 .ne(User::getId, userUpdateDTO.getId()));
         if (count > 0) {
-            throw new BaseException(ResultCode.USER_PHONE_EXIST);
+            throw new BaseException(MessageConstant.User.PHONE_EXIST);
         }
         user = new User();
         BeanUtils.copyProperties(userUpdateDTO, user);
@@ -172,10 +173,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void updateStatus(Integer status, Long id) {
         User user = getById(id);
         if (user == null) {
-            throw new BaseException(ResultCode.USER_NOT_EXIST);
+            throw new BaseException(MessageConstant.User.NOT_EXIST);
         }
         if (user.getRoleId() == 1){
-            throw new BaseException(ResultCode.ADMIN_NOT_UPDATE);
+            throw new BaseException(MessageConstant.User.ADMIN_IMMUTABLE);
         }
         user.setStatus(status);
         this.updateById(user);
@@ -189,10 +190,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void deleteUser(Long id) {
         User user = getById(id);
         if (user == null) {
-            throw new BaseException(ResultCode.USER_NOT_EXIST);
+            throw new BaseException(MessageConstant.User.NOT_EXIST);
         }
         if (user.getRoleId() == 1){
-            throw new BaseException(ResultCode.ADMIN_NOT_DELETE);
+            throw new BaseException(MessageConstant.User.ADMIN_IMMUTABLE);
         }
         this.removeById(id);
 

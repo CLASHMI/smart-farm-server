@@ -22,11 +22,11 @@ import java.io.Serializable;
 public class UserLoginDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     @Schema(description = "用户名", example = "admin")
-    @NotBlank(message = MessageConstant.USERNAME_NOT_EMPTY)
-    @Length(max = 20, message = MessageConstant.USERNAME_LENGTH_ERROR)
+    @NotBlank(message = MessageConstant.User.USERNAME_NOT_EMPTY)
+    @Length(max = 20, message = MessageConstant.User.USERNAME_LEN_ERR)
     private String username;
     @Schema(description = "密码", example = "123456")
-    @NotBlank(message = MessageConstant.PASSWORD_NOT_EMPTY)
-    @Length(max = 20, message = MessageConstant.PASSWORD_LENGTH_ERROR)
+    @NotBlank(message = MessageConstant.User.PASSWORD_NOT_EMPTY)
+    @Length(max = 20, message = MessageConstant.User.PASSWORD_LEN_ERR)
     private String password;
 }

@@ -1,5 +1,6 @@
 package com.gcxy.smartfarm.controller;
 
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.result.Result;
 import com.gcxy.smartfarm.dto.DictDataAddDTO;
 import com.gcxy.smartfarm.dto.DictDataQueryDTO;
@@ -45,7 +46,7 @@ public class DictController {
     public Result<List<DictTypeVO>> listType() {
         log.info("查询字典类型列表");
         List<DictTypeVO> list = dictTypeService.listType();
-        return Result.success(list, "查询成功");
+        return Result.success(list, MessageConstant.Common.QUERY_SUCCESS);
     }
 
     /**
@@ -57,7 +58,7 @@ public class DictController {
     public Result<List<DictDataVO>> listData(@RequestBody @Validated DictDataQueryDTO dictDataQueryDTO) {
         log.info("查询字典数据列表");
         List<DictDataVO> list = dictDataService.listData(dictDataQueryDTO);
-        return Result.success(list, "查询成功");
+        return Result.success(list, MessageConstant.Common.QUERY_SUCCESS);
     }
 
     /**
@@ -71,7 +72,7 @@ public class DictController {
     public Result<?> save(@RequestBody @Validated DictDataAddDTO dictDataAddDTO) {
         log.info("新增字典数据: {}", dictDataAddDTO);
         dictDataService.addData(dictDataAddDTO);
-        return Result.success("新增成功");
+        return Result.success(MessageConstant.Common.ADD_SUCCESS);
     }
 
     /**
@@ -86,7 +87,7 @@ public class DictController {
     public Result<?> updateStatus(@PathVariable("status") Integer status, @RequestParam Long id) {
         log.info("修改字典数据状态: {}, {}", status, id);
         dictDataService.updateStatus(status, id);
-        return Result.success("修改成功");
+        return Result.success(MessageConstant.Common.UPDATE_SUCCESS);
     }
 
     /**
@@ -100,6 +101,6 @@ public class DictController {
     public Result<?> deleteData(@RequestParam Long id) {
         log.info("删除字典数据: {}", id);
         dictDataService.deleteData(id);
-        return Result.success("删除成功");
+        return Result.success(MessageConstant.Common.DELETE_SUCCESS);
     }
 }

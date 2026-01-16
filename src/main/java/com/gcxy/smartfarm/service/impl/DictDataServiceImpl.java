@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.common.exception.BaseException;
 import com.gcxy.smartfarm.dto.DictDataAddDTO;
@@ -52,10 +53,10 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
     public void deleteData(Long id) {
         DictData data = this.getById(id);
         if (data == null) {
-            throw new BaseException(ResultCode.DICT_NOT_EXIST);
+            throw new BaseException(MessageConstant.Dict.NOT_EXIST);
         }
         if (data.getIsReferenced() == 1) {
-            throw new BaseException(ResultCode.DICT_IN_USE);
+            throw new BaseException(MessageConstant.Dict.IN_USE);
         }
         this.removeById(id);
         redisTemplate.delete("sys:dict:data:" + data.getTypeId());
@@ -71,10 +72,10 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
     public void updateStatus(Integer status, Long id) {
         DictData data = this.getById(id);
         if (data == null) {
-            throw new BaseException(ResultCode.DICT_NOT_EXIST);
+            throw new BaseException(MessageConstant.Dict.NOT_EXIST);
         }
         if (status == 1 && data.getIsReferenced() == 1) {
-            throw new BaseException(ResultCode.DICT_IN_USE);
+            throw new BaseException(MessageConstant.Dict.IN_USE);
         }
         data.setStatus(status);
         this.updateById(data);
@@ -92,7 +93,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
         wrapper.eq(DictData::getTypeId, dictDataAddDTO.getTypeId())
                 .eq(DictData::getDictName, dictDataAddDTO.getDictName());
         if (this.count(wrapper) > 0) {
-            throw new BaseException(ResultCode.DICT_NAME_EXIST);
+            throw new BaseException(MessageConstant.Dict.NAME_EXIST);
         }
         DictData data = new DictData();
         BeanUtils.copyProperties(dictDataAddDTO, data);

@@ -1,5 +1,6 @@
 package com.gcxy.smartfarm.controller;
 
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.result.PageResult;
 import com.gcxy.smartfarm.common.result.Result;
 import com.gcxy.smartfarm.dto.UserAddDTO;
@@ -48,7 +49,7 @@ public class UserController {
     public Result<UserLoginVO> login(@RequestBody @Validated UserLoginDTO userLoginDTO) {
         log.info("登录: {}", userLoginDTO);
         UserLoginVO userLoginVO = userService.login(userLoginDTO);
-        return Result.success(userLoginVO, "登录成功");
+        return Result.success(userLoginVO, MessageConstant.Common.LOGIN_SUCCESS);
     }
 
     /**
@@ -65,7 +66,7 @@ public class UserController {
             redisTemplate.opsForValue().set("sys:token:blacklist:" + token, "1", 24, TimeUnit.HOURS);
         }
         SecurityContextHolder.clearContext();
-        return Result.success("登出成功");
+        return Result.success(MessageConstant.Common.LOGOUT_SUCCESS);
     }
 
     /**
@@ -79,7 +80,7 @@ public class UserController {
     public Result<?> save(@RequestBody @Validated UserAddDTO userAddDTO) {
         log.info("新增员工: {}", userAddDTO);
         userService.addUser(userAddDTO);
-        return Result.success("新增成功");
+        return Result.success(MessageConstant.Common.ADD_SUCCESS);
     }
 
     /**
@@ -92,7 +93,7 @@ public class UserController {
     public Result<PageResult<UserVO>> page(@RequestBody UserPageQueryDTO userPageQueryDTO) {
         log.info("分页查询: {}", userPageQueryDTO);
         PageResult<UserVO> pageResult = userService.pageQuery(userPageQueryDTO);
-        return Result.success(pageResult, "查询成功");
+        return Result.success(pageResult, MessageConstant.Common.QUERY_SUCCESS);
     }
 
     /**
@@ -106,7 +107,7 @@ public class UserController {
     public Result<?> update(@RequestBody @Validated UserUpdateDTO userUpdateDTO) {
         log.info("更新用户: {}", userUpdateDTO);
         userService.updateUser(userUpdateDTO);
-        return Result.success("修改成功");
+        return Result.success(MessageConstant.Common.UPDATE_SUCCESS);
     }
 
     /**
@@ -121,7 +122,7 @@ public class UserController {
     public Result<?> updateStatus(@PathVariable("status") Integer status, @RequestParam Long id) {
         log.info("修改员工状态: {}, {}", status, id);
         userService.updateStatus(status, id);
-        return Result.success("修改成功");
+        return Result.success(MessageConstant.Common.UPDATE_SUCCESS);
     }
 
     /**
@@ -135,6 +136,6 @@ public class UserController {
     public Result<?> deleteUser(@RequestParam Long id) {
         log.info("删除员工: {}", id);
         userService.deleteUser(id);
-        return Result.success("删除成功");
+        return Result.success(MessageConstant.Common.DELETE_SUCCESS);
     }
 }

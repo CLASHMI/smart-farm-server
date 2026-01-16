@@ -1,6 +1,7 @@
 package com.gcxy.smartfarm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.entity.Role;
 import com.gcxy.smartfarm.entity.User;
@@ -43,12 +44,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // 2. 查无此人 -> 抛异常
         if (user == null) {
-            throw new UsernameNotFoundException(ResultCode.USER_LOGIN_ERROR.getMessage());
+            throw new UsernameNotFoundException(MessageConstant.User.NOT_EXIST);
         }
 
         // 3. 账号被禁用 -> 抛 DisabledException
         if (user.getStatus() != null && user.getStatus() == 1) {
-            throw new DisabledException(ResultCode.ACCOUNT_DISABLED.getMessage());
+            throw new DisabledException(MessageConstant.Auth.ACCOUNT_DISABLED);
         }
 
         // 4. 封装权限 (需要用 roleId 查 Role 表)

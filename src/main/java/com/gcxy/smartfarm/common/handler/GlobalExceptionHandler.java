@@ -1,5 +1,6 @@
 package com.gcxy.smartfarm.common.handler;
 
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.common.exception.BaseException;
 import com.gcxy.smartfarm.common.result.Result;
@@ -10,10 +11,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
 
 /**
  * GlobalExceptionHandler 类
@@ -34,33 +38,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     @ResponseStatus(HttpStatus.OK)
     public Result<?> handleBaseException(BaseException ex) {
-        // 业务层手动抛出的异常，直接返回
-        if (ex.getCode() != null) {
-            Result<?> result = new Result<>();
-            result.setCode(ex.getCode());
-            result.setMessage(ex.getMessage());
-            return result;
-        }
-        return Result.error(ResultCode.BUSINESS_ERROR);
+        return Result.error(ex.getCode(), ex.getMessage());
     }
 
     /**
      * 2. 登录失败 (密码错误 / 账号不存在)
      * 归类为：业务逻辑错误 (100601)
-     * 注意：这里不用 401，因为 401 是 Token 相关的
      */
     @ExceptionHandler({BadCredentialsException.class, InternalAuthenticationServiceException.class})
     @ResponseStatus(HttpStatus.OK)
-    public Result<?> handleBadCredentialsException(Exception ex) {
-        if (ex instanceof InternalAuthenticationServiceException) {
-            if (ex.getCause() instanceof DisabledException) {
-                return Result.error(ResultCode.ACCOUNT_DISABLED);
-            } else if (ex.getCause() instanceof UsernameNotFoundException){
-                return Result.error(ResultCode.USER_LOGIN_ERROR);
-            }
+    public Result<?> handleAuthenticationException(Exception ex) {
+        // 账号被禁用
+        if (ex.getCause() instanceof DisabledException) {
+            return Result.error(ResultCode.BUSINESS_ERROR.getCode(), MessageConstant.Auth.ACCOUNT_DISABLED);
         }
-        log.warn("用户登录发生异常: {}", ex.getMessage());
-        return Result.error(ResultCode.USER_LOGIN_ERROR);
+        // 其他都视为用户名或密码错误，防止暴力破解猜测
+        return Result.error(ResultCode.BUSINESS_ERROR.getCode(), MessageConstant.Auth.LOGIN_ERROR);
     }
 
     /**
@@ -69,11 +62,12 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Result<?> handleValidationException(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldError().getDefaultMessage();
-        Result<?> result = Result.error(ResultCode.PARAM_ERROR);
-        result.setMessage(message);
-        return result;
+    public Result<?> handleValidationException(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        // 获取第一条错误信息
+        String msg = Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage();
+        log.warn("参数校验失败: {}", msg);
+        return Result.error(ResultCode.PARAM_ERROR.getCode(), msg);
     }
 
     /**

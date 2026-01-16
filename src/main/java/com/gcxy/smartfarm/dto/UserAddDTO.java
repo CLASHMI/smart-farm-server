@@ -27,16 +27,16 @@ public class UserAddDTO implements Serializable {
      * 必填，最长 10 字符
      */
     @Schema(description = "姓名 (最长10字符)", example = "李四", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = MessageConstant.REALNAME_NOT_EMPTY)
-    @Length(max = 10, message = MessageConstant.REALNAME_LENGTH_ERROR)
+    @NotBlank(message = MessageConstant.User.REALNAME_NOT_EMPTY)
+    @Length(max = 10, message = MessageConstant.User.REALNAME_LEN_ERR)
     private String realName;
     /**
      * 手机号
      * 必填，11位数字
      */
     @Schema(description = "手机号 (11位数字)", example = "13800138000", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = MessageConstant.PHONE_NOT_EMPTY)
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = MessageConstant.PHONE_FORMAT_ERROR)
+    @NotBlank(message = MessageConstant.User.PHONE_NOT_EMPTY)
+    @Pattern(regexp = "^1[3-9]\\d{9}$", message = MessageConstant.User.PHONE_FMT_ERR)
     private String phone;
     /**
      * 初始状态

@@ -20,7 +20,7 @@ import java.io.Serializable;
 public class DictDataQueryDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     @Schema(description = "字典类型ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = MessageConstant.DICT_ID_NOT_NULL)
+    @NotNull(message = MessageConstant.Dict.TYPE_ID_NULL)
     private Long typeId;
     @Schema(description = "字典选项名称 (模糊查询)", example = "牛")
     private String dictName;

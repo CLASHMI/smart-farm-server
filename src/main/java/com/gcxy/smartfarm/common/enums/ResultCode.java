@@ -14,33 +14,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ResultCode {
-
-    // --- 1. 成功 ---
     SUCCESS(100200, "操作成功"),
-
-    // --- 2. 客户端错误 (1004xx) ---
-    PARAM_ERROR(100400, "参数错误"),
-    NOT_LOGIN(100401, "未登录，请先登录"),
-    TOKEN_EXPIRED(100401, "身份已过期，请重新登录"),
-    TOKEN_INVALID(100401, "身份无效，请重新登录"),
-    FORBIDDEN(100403, "权限不足"),
-    NOT_FOUND(100404, "资源不存在"),
-
-    // --- 3. 服务器错误 (1005xx) ---
-    SYSTEM_ERROR(100500, "服务器内部错误"),
-
-    // --- 4. 业务逻辑错误 (Code 统一为 100601) ---
-    // 通用业务错误
-    BUSINESS_ERROR(100601, "业务逻辑错误"),
-    USER_PHONE_EXIST(100601, "手机号已存在"),
-    DICT_NAME_EXIST(100601, "字典名称已存在"),
-    DICT_IN_USE(100601, "该字典已被使用，无法停用"),
-    USER_LOGIN_ERROR(100601, "用户名或密码错误"),
-    ACCOUNT_DISABLED(100601, "账号已禁用，无法登录"),
-    USER_NOT_EXIST(100601, "员工不存在"),
-    DICT_NOT_EXIST(100601, "字典不存在"),
-    ADMIN_NOT_UPDATE(100601, "管理员不能被修改"),
-    ADMIN_NOT_DELETE(100601, "管理员不能被删除");
+    PARAM_ERROR(100400, "参数校验失败"),
+    UNAUTHORIZED(100401, "身份未认证或已过期"),
+    FORBIDDEN(100403, "没有操作权限"),
+    NOT_FOUND(100404, "请求资源不存在"),
+    SYSTEM_ERROR(100500, "系统繁忙，请稍后重试"),
+    BUSINESS_ERROR(100601, "业务处理失败");
     private final Integer code;
-    private final String message;
+    private final String defaultMessage;
 }

@@ -1,6 +1,7 @@
 package com.gcxy.smartfarm.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gcxy.smartfarm.common.constant.MessageConstant;
 import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.common.filter.JwtAuthenticationTokenFilter;
 import com.gcxy.smartfarm.common.result.Result;
@@ -97,15 +98,18 @@ public class SecurityConfig {
                             Object jwtError = request.getAttribute("JWT_ERROR");
                             Result<?> result;
 
+                            // 统一使用 100401 作为业务状态码
+                            Integer code = ResultCode.UNAUTHORIZED.getCode();
+
                             if (jwtError instanceof ExpiredJwtException) {
-                                // 场景：Token 过期 -> 返回 TOKEN_EXPIRED
-                                result = Result.error(ResultCode.TOKEN_EXPIRED);
+                                // Token 过期
+                                result = Result.error(code, MessageConstant.Auth.TOKEN_EXPIRED);
                             } else if (jwtError instanceof JwtException) {
-                                // 场景：Token 伪造/格式错 -> 返回 TOKEN_INVALID
-                                result = Result.error(ResultCode.TOKEN_INVALID);
+                                // Token 伪造/格式错
+                                result = Result.error(code, MessageConstant.Auth.TOKEN_INVALID);
                             } else {
-                                // 场景：没带 Token -> 返回 UNAUTHORIZED
-                                result = Result.error(ResultCode.NOT_LOGIN);
+                                // 没带 Token
+                                result = Result.error(code, MessageConstant.Auth.NOT_LOGIN);
                             }
 
                             response.getWriter().write(new ObjectMapper().writeValueAsString(result));

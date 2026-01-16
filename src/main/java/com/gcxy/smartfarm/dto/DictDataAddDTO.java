@@ -22,11 +22,11 @@ import java.io.Serializable;
 public class DictDataAddDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     @Schema(description = "字典类型ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = MessageConstant.DICT_ID_NOT_NULL)
+    @NotNull(message = MessageConstant.Dict.TYPE_ID_NULL)
     private Long typeId;
     @Schema(description = "字典选项名称", example = "奶牛", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = MessageConstant.DICT_NAME_NOT_NULL)
-    @Length(max = 100, message = MessageConstant.DICT_NAME_LENGTH_ERROR)
+    @NotBlank(message = MessageConstant.Dict.NAME_NOT_NULL)
+    @Length(max = 100, message = MessageConstant.Dict.NAME_LEN_ERR)
     private String dictName;
     @Schema(description = "排序号", example = "1", defaultValue = "0")
     private Integer dictSort = 0;
