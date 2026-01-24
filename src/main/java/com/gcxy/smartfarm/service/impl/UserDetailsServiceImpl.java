@@ -2,14 +2,12 @@ package com.gcxy.smartfarm.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gcxy.smartfarm.common.constant.MessageConstant;
-import com.gcxy.smartfarm.common.enums.ResultCode;
 import com.gcxy.smartfarm.entity.Role;
 import com.gcxy.smartfarm.entity.User;
 import com.gcxy.smartfarm.mapper.RoleMapper;
 import com.gcxy.smartfarm.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
